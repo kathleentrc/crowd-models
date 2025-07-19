@@ -1,5 +1,10 @@
-# Bayesian Neural Networks for Crowd Occupancy Prediction
-# Adapted from: https://keras.io/examples/keras_recipes/bayesian_neural_networks/
+"""
+# bayesian_neural_network.py
+    This file implements Bayesian Neural Networks for crowd density label prediction.
+    Adapted from: https://keras.io/examples/keras_recipes/bayesian_neural_networks/
+"""
+
+# pip install tensorflow
 # pip install tensorflow-probability
 
 import numpy as np
@@ -65,7 +70,7 @@ FEATURE_NAMES = [
 hidden_units = [8, 8]
 learning_rate = 0.001
 
-def run_experiment(model, loss, train_dataset, test_dataset):
+def run_experiment(model, loss, train_dataset, test_dataset, num_epochs):
     model.compile(
         optimizer=keras.optimizers.RMSprop(learning_rate=learning_rate),
         loss=loss,
@@ -209,127 +214,4 @@ def compute_predictions_classification(model, examples, iterations=100):
     predicted_classes = np.clip(predicted_classes, 0, 3)
     
     return prediction_mean, prediction_std, predicted_classes
-
-# Main execution
-if __name__ == "__main__":
-    # Load the data
-    csv_path = "fused.csv"  # Your crowd data CSV
-    train_dataset, test_dataset, dataset_size, train_size = get_train_and_test_splits(
-        csv_path, train_size_ratio=0.85, batch_size=16
-    )
     
-    print(f"Dataset size: {dataset_size}")
-    print(f"Train size: {train_size}")
-    print(f"Test size: {dataset_size - train_size}")
-    
-    # Prepare test examples for prediction demonstration
-    sample = 10
-    examples_raw = list(test_dataset.unbatch().shuffle(100).batch(sample))[0]
-    examples, targets = examples_raw
-    
-    # Examples are already in dictionary format from the fixed data loading
-    
-    print("\n" + "="*50)
-    print("1. TRAINING BASELINE MODEL")
-    print("="*50)
-    
-    num_epochs = 100
-    classification_loss = keras.losses.CategoricalCrossentropy()  # FIXED: Use correct loss
-
-    baseline_model = create_baseline_model()
-    run_experiment(baseline_model, classification_loss, train_dataset, test_dataset)
-    
-    # Test baseline predictions
-    predicted = baseline_model(examples).numpy()
-    predicted_classes = np.argmax(predicted, axis=1)
-    actual_classes = np.argmax(targets.numpy(), axis=1)
-
-    print("\nBaseline Model Predictions:")
-    class_names = ['spacious', 'lightly_occupied', 'moderately_congested', 'congested']
-
-    # FIXED: Add debugging and bounds checking
-    print(f"Predicted shape: {predicted.shape}")
-    print(f"Predicted classes: {predicted_classes}")
-    print(f"Max predicted class: {np.max(predicted_classes)}")
-    print(f"Min predicted class: {np.min(predicted_classes)}")
-    
-    for idx in range(sample):
-    # FIXED: Add bounds checking
-        pred_class = predicted_classes[idx]
-        actual_class = actual_classes[idx]
-        
-        # Ensure indices are within bounds
-        if pred_class >= len(class_names):
-            print(f"WARNING: Predicted class {pred_class} is out of bounds! Using class 3 instead.")
-            pred_class = 3  # Default to last class
-        
-        if actual_class >= len(class_names):
-            print(f"WARNING: Actual class {actual_class} is out of bounds! Using class 3 instead.")
-            actual_class = 3  # Default to last class
-        
-        # FIXED: Ensure predicted array indexing is safe
-        if pred_class < predicted.shape[1]:
-            confidence = predicted[idx][pred_class]
-        else:
-            confidence = 0.0
-            print(f"WARNING: Cannot access confidence for class {pred_class}")
-        
-        print(f"Predicted: {class_names[pred_class]} (confidence: {confidence:.3f}) - Actual: {class_names[actual_class]}")
-    
-    print("\n" + "="*50)
-    print("2. TRAINING BAYESIAN NEURAL NETWORK")
-    print("="*50)
-    
-    num_epochs = 500
-    bnn_model = create_bnn_model(train_size)
-    run_experiment(bnn_model, classification_loss, train_dataset, test_dataset)
-    
-    # Test BNN predictions with uncertainty
-    print("\nBayesian Neural Network Predictions (with epistemic uncertainty):")
-    prediction_mean, prediction_std, predicted_classes_bnn = compute_predictions_classification(
-        bnn_model, examples
-    )
-    
-    for idx in range(sample):
-        pred_class = predicted_classes_bnn[idx]
-        actual_class = actual_classes[idx]
-        
-        # Ensure indices are within bounds
-        if pred_class >= len(class_names):
-            print(f"WARNING: BNN predicted class {pred_class} is out of bounds! Using class 3 instead.")
-            pred_class = 3
-        
-        if actual_class >= len(class_names):
-            print(f"WARNING: BNN actual class {actual_class} is out of bounds! Using class 3 instead.")
-            actual_class = 3
-        
-        # FIXED: Safe indexing
-        if pred_class < prediction_mean.shape[1]:
-            confidence = prediction_mean[idx][pred_class]
-            uncertainty = prediction_std[idx][pred_class]
-        else:
-            confidence = 0.0
-            uncertainty = 0.0
-            print(f"WARNING: Cannot access BNN confidence for class {pred_class}")
-        
-        print(
-            f"Predicted: {class_names[pred_class]} "
-            f"(confidence: {confidence:.3f} ± {uncertainty:.3f}) - "
-            f"Actual: {class_names[actual_class]}"
-        )
-    
-    print("\n" + "="*50)
-    print("3. TRAINING PROBABILISTIC BAYESIAN NEURAL NETWORK")
-    print("="*50)
-    
-    # Note: For simplicity, we'll use the regular BNN for classification
-    # Creating a proper probabilistic classifier requires more complex setup
-    print("Using regular BNN with uncertainty quantification for classification...")
-    
-    print("\n" + "="*50)
-    print("SUMMARY")
-    print("="*50)
-    print("1. Baseline Model: Single point predictions with confidence scores")
-    print("2. BNN Model: Predictions with epistemic uncertainty (model uncertainty)")
-    print("3. For classification, uncertainty is expressed as confidence intervals")
-    print("   around the predicted class probabilities")

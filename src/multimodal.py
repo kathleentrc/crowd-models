@@ -1,3 +1,9 @@
+"""
+# multimodal.py
+    This file implements early fusion of image features and user reports for multimodal analysis.
+    It uses one-hot encoding for user reports and combines them with image features.
+"""
+
 from sklearn.preprocessing import OneHotEncoder
 import numpy as np
 

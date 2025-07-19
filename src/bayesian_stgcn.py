@@ -1,3 +1,9 @@
+"""
+# src/bayesian_stgcn.py
+    This file implements a Bayesian Neural Network (BNN) with spatio-temporal aggregation capabilities.
+    Note: This file is not used in the current implementation.
+"""
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
