@@ -22,9 +22,9 @@ img_count = []
 total_estimated_count = 0
 
 
-""" ****************************************
-        MODALITY-SPECIFIC PROCESSING
-**************************************** """ 
+""" *******************************************************
+        MODALITY-SPECIFIC PROCESSING (IMAGE REPORT)
+******************************************************* """ 
 # Process each image: detect and blur people
 for image_path in image_paths:
     filename = os.path.splitext(os.path.basename(image_path))[0]
@@ -49,3 +49,4 @@ print(f"Fused features:\n {fused_features}")
 """ ******************************************************************
         BAYESIAN NN CLASSIFIER AND SPATIO TEMPORAL AGGREGATION
 ****************************************************************** """ 
+
