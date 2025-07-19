@@ -1,5 +1,6 @@
 from src.image_processing import run_yolo_detection, blur_people_and_save, print_estimated_count
 import os
+from src.fusion import early_fusion
 
 # Image and report input
 image_paths = [
@@ -17,14 +18,21 @@ user_reports = [
 ]
 
 total_estimated_count = 0
+image_features = []
 
-# Process each image: detect and blur people
+# Process each image: detect, blur, count, and collect features
 for image_path in image_paths:
     filename = os.path.splitext(os.path.basename(image_path))[0]
     output_path = f"processed_images/{filename}_blurred.jpg"
     img, results = run_yolo_detection(image_path)
     count = blur_people_and_save(img, results, output_path)
     total_estimated_count += count
+    image_features.append([count])
     print_estimated_count(count, output_path)
 
 print(f"\n[5-MINUTE WINDOW] Number of People in the Platform: {total_estimated_count}\n")
+
+# Early fusion
+fused_features = early_fusion(image_features, user_reports)
+print("Fused features shape:", fused_features.shape)
+print("Fused features:\n", fused_features)
