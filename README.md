@@ -12,6 +12,6 @@ The main file serves as the entry point for the crowd density estimation applica
 - Bayesian Neural Network Initial Training
 - Spatio-Temporal Aggregation
   
-***Note: The Spatio-Temporal Graph Convolutional Network (STGCN) is not yet implemented in this version.***
+***TODO: The Spatio-Temporal Graph Convolutional Network (STGCN) is not yet implemented in this version.***
 
 Each process is stored in the ```src/``` directory.
