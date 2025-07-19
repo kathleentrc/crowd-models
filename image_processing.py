@@ -1,4 +1,13 @@
-# pip install ultralytics 
+"""
+    File Name: image_processing.py
+    Description: This file detects and blurs people using a pre-trained YOLOv8 model 
+                 and gaussian blur from the OpenCV Library
+
+    Documentation:
+    YOLO:   https://docs.ultralytics.com/datasets/detect/coco/#citations-and-acknowledgments
+    OpenCV: https://docs.opencv.org/4.x/d4/d13/tutorial_py_filtering.html
+"""
+
 import cv2 as cv
 import os
 from ultralytics import YOLO
