@@ -1,0 +1,25 @@
+username,type,perception,people_count,station,train_service,direction,timestamp
+@juandelacruz,platform,spacious,5,Taft Avenue,MRT-3,Northbound,2025-07-19 08:00:00
+@anekacampos,platform,spacious,5,Taft Avenue,MRT-3,Northbound,2025-07-19 08:00:02
+@kathcruz,queue,moderately crowded,21,Ayala,MRT-3,Southbound,2025-07-19 08:00:30
+@pedro99,inside train,lightly occupied,12,Guadalupe,MRT-3,Northbound,2025-07-19 08:01:00
+@lisagonzales,platform,congested,40,Shaw Boulevard,MRT-3,Southbound,2025-07-19 08:01:10
+@bryan_m,queue,moderately crowded,27,Ortigas,MRT-3,Northbound,2025-07-19 08:01:20
+@arcegabea,queue,moderately crowded,27,Ortigas,MRT-3,Northbound,2025-07-19 08:01:20
+@acetoledo,queue,moderately crowded,27,Ortigas,MRT-3,Northbound,2025-07-19 08:01:22
+@angelieee,inside train,spacious,8,Cubao,MRT-3,Northbound,2025-07-19 08:01:30
+@tony_santos,platform,lightly occupied,14,Boni,MRT-3,Southbound,2025-07-19 08:01:45
+@ashleyrose,queue,congested,45,North Avenue,MRT-3,Northbound,2025-07-19 08:02:00
+@itz_me_miguel,inside train,moderately crowded,23,Taft Avenue,MRT-3,Southbound,2025-07-19 08:02:15
+@joycee,platform,spacious,4,Ayala,MRT-3,Northbound,2025-07-19 08:02:30
+@carloguapo,queue,congested,50,Shaw Boulevard,MRT-3,Northbound,2025-07-19 08:02:45
+@trisha.lopez,inside train,lightly occupied,11,Cubao,MRT-3,Southbound,2025-07-19 08:03:00
+@edwardvill,platform,moderately crowded,19,Ortigas,MRT-3,Northbound,2025-07-19 08:03:15
+@hazeljoy,queue,spacious,3,North Avenue,MRT-3,Southbound,2025-07-19 08:03:30
+@redmarko,inside train,congested,46,Guadalupe,MRT-3,Northbound,2025-07-19 08:03:45
+@arianebee,platform,lightly occupied,10,Boni,MRT-3,Southbound,2025-07-19 08:04:00
+@josephm,queue,moderately crowded,29,Cubao,MRT-3,Northbound,2025-07-19 08:04:15
+@triciacat,inside train,spacious,6,Ayala,MRT-3,Southbound,2025-07-19 08:04:30
+@ronlopez,platform,congested,44,Taft Avenue,MRT-3,Northbound,2025-07-19 08:04:45
+@camille.m,queue,lightly occupied,9,Shaw Boulevard,MRT-3,Southbound,2025-07-19 08:05:00
+@janbautista,inside train,moderately crowded,18,North Avenue,MRT-3,Northbound,2025-07-19 08:05:00
