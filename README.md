@@ -10,7 +10,7 @@ The main file serves as the entry point for the crowd density estimation applica
 - OpenCV Gaussian Blur
 - Multimodal Fusion with Early Fusion
 - Bayesian Neural Network Initial Training
-- Spatio-Temporal Graph Convolutional Network (STGCN)
+- Spatio-Temporal Aggregation
   
 ***Note: The Spatio-Temporal Graph Convolutional Network (STGCN) is not yet implemented in this version.***
 
