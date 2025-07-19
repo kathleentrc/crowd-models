@@ -1,0 +1,15 @@
+MULTIMODAL FUSION
+https://medium.com/@raj.pulapakura/multimodal-models-and-fusion-a-complete-guide-225ca91f6861
+https://www.educative.io/answers/what-is-multimodal-fusion
+
+YOLO
+https://docs.ultralytics.com/datasets/detect/coco/#citations-and-acknowledgments
+
+OPENCV
+https://docs.opencv.org/4.x/d4/d13/tutorial_py_filtering.html
+
+CLIP
+https://medium.com/data-science/clip-model-and-the-importance-of-multimodal-embeddings-1c8f6b13bf72
+
+BAYESIAN NN
+https://www.coursera.org/articles/bayesian-neural-network
