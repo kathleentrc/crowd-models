@@ -19,7 +19,6 @@ def run_yolo_detection(image_path, model_path="models/yolov8n.pt"):
     results = model(img)
     return img, results
 
-
 def blur_people_and_save(img, results, output_path):
     """
     This function takes the image and detection results, applies Gaussian blur to detected people,

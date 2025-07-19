@@ -1,95 +1,27 @@
-# pip install torch torchvision torchaudio
-
-import os
-import sys
-
-# === ABSOLUTE FIX ===
-# Add the full path to 'src' directly to sys.path
-CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
-SRC_PATH = os.path.join(CURRENT_DIR, "src")
-sys.path.append(SRC_PATH)
-
+# === src/multimodal_fusion.py ===
 import torch
-import torch.nn as nn
-from torch.utils.data import DataLoader, Dataset
-from torchvision import transforms
+import open_clip
 from PIL import Image
-import cv2 as cv
 
-from ultralytics import YOLO
+# Load CLIP
+device = "cuda" if torch.cuda.is_available() else "cpu"
+clip_model, _, preprocess = open_clip.create_model_and_transforms("ViT-B-32", pretrained="laion2b_s34b_b79k")
+clip_model = clip_model.to(device)
+tokenizer = open_clip.get_tokenizer("ViT-B-32")
 
-# ✅ Now this will finally work:
-from custom_model import CustomModel
-from config import Config
+def perform_multimodal_fusion(image_paths, user_reports):
+    embeddings = []
+    for i, image_path in enumerate(image_paths):
+        image = preprocess(Image.open(image_path)).unsqueeze(0).to(device)
+        with torch.no_grad():
+            image_features = clip_model.encode_image(image)
+            image_features /= image_features.norm(dim=-1, keepdim=True)
 
-sys.path.append(os.path.abspath('.'))
+            user_tokens = tokenizer(user_reports[i]).unsqueeze(0).to(device)
+            text_features = clip_model.encode_text(user_tokens)
+            text_features /= text_features.norm(dim=-1, keepdim=True)
 
-# Path Setup
-image_path = "raw_images/cavite_extension.jpg"
-output_path = "processed_images/cavite_extension_blurred.jpg"
-os.makedirs("processed_images", exist_ok=True)
+            fused = torch.cat([image_features, text_features], dim=-1)
+            embeddings.append(fused.squeeze(0))
 
-# Load YOLO model
-yolo_model = YOLO("models/yolov8n.pt")
-
-# Load image and run detection
-img = cv.imread(image_path)
-assert img is not None, f"could not read image: {image_path}"
-
-results = yolo_model(img)
-estimated_count = 0
-
-# Gaussian blur for people in the image
-for box in results[0].boxes:
-    cls_id = int(box.cls[0])
-    if cls_id == 0:  # 0 = person
-        estimated_count += 1
-        x1, y1, x2, y2 = map(int, box.xyxy[0])
-        x1, y1 = max(x1, 0), max(y1, 0)
-        x2, y2 = min(x2, img.shape[1]), min(y2, img.shape[0])
-        region = img[y1:y2, x1:x2]
-        if region.size > 0:
-            blurred = cv.GaussianBlur(region, (51, 51), 0)
-            img[y1:y2, x1:x2] = blurred
-
-cv.imwrite(output_path, img)
-print(f"People count: {estimated_count}")
-print(f"Saved blurred image to {output_path}")
-
-# --- Embedding Extraction Setup ---
-
-# Dummy label input (simulate user input)
-crowding_label = "moderately congested"  # options: spacious, lightly congested, moderately congested, congested
-
-# Text to index mapping
-label_to_index = {
-    "spacious": 0,
-    "lightly congested": 1,
-    "moderately congested": 2,
-    "congested": 3,
-}
-text_tensor = torch.tensor([label_to_index[crowding_label]])
-
-# Image preprocessing (must match your CustomModel's expected input format)
-transform = transforms.Compose([
-    transforms.ToPILImage(),
-    transforms.Resize((224, 224)),  # or the size expected by your vision encoder
-    transforms.ToTensor(),
-])
-
-image_tensor = transform(img).unsqueeze(0)  # Add batch dim
-
-# Device setup
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-image_tensor = image_tensor.to(device)
-text_tensor = text_tensor.to(device)
-
-# Load custom model
-model = CustomModel().to(device)
-model.eval()
-
-with torch.no_grad():
-    image_embedding, text_embedding = model.encode(image_tensor, text_tensor)
-
-print("Image embedding shape:", image_embedding.shape)
-print("Text embedding shape:", text_embedding.shape)
+    return embeddings  # ✅ DON'T FORGET THIS
