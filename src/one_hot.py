@@ -1,6 +1,6 @@
 """
 # one_hot.py
-    No need to run this file as it only contains functions for one-hot encoding 
+    No need to run this file again as it only contains functions for one-hot encoding 
     categorical labels of dummy data found in csv_files/bayesian_output.csv. 
     This code is not part of the main crowd forecasting pipeline. Only used for TESTING.
 """
