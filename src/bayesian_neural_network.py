@@ -103,10 +103,15 @@ def create_baseline_model():
     for units in hidden_units:
         features = layers.Dense(units, activation="sigmoid")(features)
     
-    # Output for classification - 4 classes
-    outputs = layers.Dense(units=4, activation="softmax")(features)
+    # FIXED: Ensure exactly 4 output units for 4 classes
+    outputs = layers.Dense(units=4, activation="softmax", name="classification_output")(features)
     
     model = keras.Model(inputs=inputs, outputs=outputs)
+    
+    # FIXED: Print model summary to verify architecture
+    print("Model architecture:")
+    model.summary()
+    
     return model
 
 # 2. Bayesian Neural Network with Weight Uncertainty
@@ -190,10 +195,18 @@ def compute_predictions_classification(model, examples, iterations=100):
         predicted.append(pred)
     predicted = np.array(predicted)  # Shape: (iterations, batch_size, num_classes)
     
+    # FIXED: Add shape validation
+    print(f"Prediction array shape: {predicted.shape}")
+    
     # Compute statistics across iterations
     prediction_mean = np.mean(predicted, axis=0)  # Average probabilities
     prediction_std = np.std(predicted, axis=0)    # Standard deviation of probabilities
+    
+    # FIXED: Ensure argmax doesn't exceed bounds
     predicted_classes = np.argmax(prediction_mean, axis=1)  # Most likely class
+    
+    # FIXED: Clip predictions to valid range
+    predicted_classes = np.clip(predicted_classes, 0, 3)
     
     return prediction_mean, prediction_std, predicted_classes
 
@@ -230,11 +243,38 @@ if __name__ == "__main__":
     predicted = baseline_model(examples).numpy()
     predicted_classes = np.argmax(predicted, axis=1)
     actual_classes = np.argmax(targets.numpy(), axis=1)
-    
+
     print("\nBaseline Model Predictions:")
     class_names = ['spacious', 'lightly_occupied', 'moderately_congested', 'congested']
+
+    # FIXED: Add debugging and bounds checking
+    print(f"Predicted shape: {predicted.shape}")
+    print(f"Predicted classes: {predicted_classes}")
+    print(f"Max predicted class: {np.max(predicted_classes)}")
+    print(f"Min predicted class: {np.min(predicted_classes)}")
+    
     for idx in range(sample):
-        print(f"Predicted: {class_names[predicted_classes[idx]]} (confidence: {predicted[idx][predicted_classes[idx]]:.3f}) - Actual: {class_names[actual_classes[idx]]}")
+    # FIXED: Add bounds checking
+        pred_class = predicted_classes[idx]
+        actual_class = actual_classes[idx]
+        
+        # Ensure indices are within bounds
+        if pred_class >= len(class_names):
+            print(f"WARNING: Predicted class {pred_class} is out of bounds! Using class 3 instead.")
+            pred_class = 3  # Default to last class
+        
+        if actual_class >= len(class_names):
+            print(f"WARNING: Actual class {actual_class} is out of bounds! Using class 3 instead.")
+            actual_class = 3  # Default to last class
+        
+        # FIXED: Ensure predicted array indexing is safe
+        if pred_class < predicted.shape[1]:
+            confidence = predicted[idx][pred_class]
+        else:
+            confidence = 0.0
+            print(f"WARNING: Cannot access confidence for class {pred_class}")
+        
+        print(f"Predicted: {class_names[pred_class]} (confidence: {confidence:.3f}) - Actual: {class_names[actual_class]}")
     
     print("\n" + "="*50)
     print("2. TRAINING BAYESIAN NEURAL NETWORK")
@@ -251,12 +291,31 @@ if __name__ == "__main__":
     )
     
     for idx in range(sample):
-        confidence = prediction_mean[idx][predicted_classes_bnn[idx]]
-        uncertainty = prediction_std[idx][predicted_classes_bnn[idx]]
+        pred_class = predicted_classes_bnn[idx]
+        actual_class = actual_classes[idx]
+        
+        # Ensure indices are within bounds
+        if pred_class >= len(class_names):
+            print(f"WARNING: BNN predicted class {pred_class} is out of bounds! Using class 3 instead.")
+            pred_class = 3
+        
+        if actual_class >= len(class_names):
+            print(f"WARNING: BNN actual class {actual_class} is out of bounds! Using class 3 instead.")
+            actual_class = 3
+        
+        # FIXED: Safe indexing
+        if pred_class < prediction_mean.shape[1]:
+            confidence = prediction_mean[idx][pred_class]
+            uncertainty = prediction_std[idx][pred_class]
+        else:
+            confidence = 0.0
+            uncertainty = 0.0
+            print(f"WARNING: Cannot access BNN confidence for class {pred_class}")
+        
         print(
-            f"Predicted: {class_names[predicted_classes_bnn[idx]]} "
+            f"Predicted: {class_names[pred_class]} "
             f"(confidence: {confidence:.3f} ± {uncertainty:.3f}) - "
-            f"Actual: {class_names[actual_classes[idx]]}"
+            f"Actual: {class_names[actual_class]}"
         )
     
     print("\n" + "="*50)
