@@ -57,7 +57,6 @@ def blur_people_and_save(img, results, output_path):
     cv.imwrite(output_path, img)
     return estimated_count
 
-
 def print_estimated_count(estimated_count, output_path):
     """Display estimated count and where the blurred image was saved."""
     print(f"People count: {estimated_count}")

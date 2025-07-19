@@ -41,12 +41,16 @@ print(f"\n[5-MINUTE WINDOW] Number of People in the Platform: {total_estimated_c
 """ ****************************************
               MULTIMODAL FUSION
 **************************************** """ 
-
 # Early fusion
 fused_features = early_fusion(img_count, user_reports)
 print(f"Fused features:\n {fused_features}")
 
-""" ******************************************************************
-        BAYESIAN NN CLASSIFIER AND SPATIO TEMPORAL AGGREGATION
-****************************************************************** """ 
 
+""" ****************************************
+           BAYESIAN NN CLASSIFIER
+**************************************** """ 
+# Choose a deep nn architecture i.e., a functional model 
+
+# Then choose a stochastic model i.e., prior distribution over the possible model parametrization and prior confidence in the predictive power of the model
+
+# When performing classification, the average model prediction will give the relative probability of each class, which can be considered a measure of uncertainty
